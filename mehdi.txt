@@ -1,0 +1,86 @@
+git clone repo autre_repo #copie en local
+git remote add origin #url
+git remote set-url #changer url
+
+rails new -d postgresql nomdetasuperappli --skip-turbolinks
+rails db:create
+
+gem 'bcrypt'
+gem 'rubocop'
+gem 'table_print'
+gem 'faker'
+gem 'letter_opener'
+gem 'dotenv-rails' --> .env in .gitignore
+gem 'devise'
+bundle install
+
+# installation de devise après le bundle install
+rails generate devise:install
+config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
+
+# after migration and user tweaking generate the views
+rails generate devise:views
+
+$ rails generate controller static_pages home
+$ rails g controller Categories index show new create edit update destroy
+$ rails g model Category name:string slug:string
+$ rails g scaffold User username:string bio:text
+
+
+#Linking talbe
+def change
+  create_table :appointments do |t|
+    t.belongs_to :doctor, index: true
+    t.belongs_to :patient, index: true
+    t.timestamps
+  end
+end
+
+def change
+  add_reference :appointments, :doctor, foreign_key: true
+  add_reference :appointments, :patient, foreign_key: true
+end
+
+    # Add column to event indicating and admin from the user model
+    add_reference :events, :event_admin, foreign_key: {to_table: :users}
+class Event < ApplicationRecord
+  # Indicate that the event have and admin who is a User (as admin model doesn't exist)
+  belongs_to :event_admin, class_name: "User"
+end
+
+# Page d'accueil
+root 'controller#method'
+# REST Routes in routes.rb
+resources :gossips
+resources :gossips, except: [:destroy] 
+resources :comments, only: [:new, :create, :index, :destroy]
+# imbrication de routes
+resources :gossips do
+  resources :comments
+end
+# Creating controller
+$ rails g controller Categories index show new create edit update destroy
+
+#after defining mailer
+  config.action_mailer.delivery_method = :letter_opener
+  config.action_mailer.perform_deliveries = true
+
+# addind more parameter to linked device model
+
+class ApplicationController < ActionController: :Base
+     protect_from_forgery with: :exception
+
+     before_action :configure_permitted_parameters, if: :devise_controller?
+
+     protected
+
+          def configure_permitted_parameters
+               devise_parameter_sanitizer.permit(:sign_up) { |u| u.permit(:name, :email, :password)}
+
+               devise_parameter_sanitizer.permit(:account_update) { |u| u.permit(:name, :email, :password, :current_password)}
+          end
+
+end
+
+
+
